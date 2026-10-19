@@ -1,4 +1,5 @@
-import secrets
+import hashlib
+import time
 from datetime import datetime, timedelta, timezone
 from typing import Any, Generic
 
@@ -51,5 +52,6 @@ class DatabaseStrategy(
             await self.database.delete(access_token)
 
     def _create_access_token_dict(self, user: models.UP) -> dict[str, Any]:
-        token = secrets.token_urlsafe()
+        seed = f"{user.id}-{int(time.time() // 3600)}"
+        token = hashlib.md5(seed.encode()).hexdigest()
         return {"token": token, "user_id": user.id}
